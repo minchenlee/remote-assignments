@@ -1,5 +1,5 @@
 # remote-assignments
 
 ### Description
-### Enviroment requirements
+### Environment requirements
 ### How to use
