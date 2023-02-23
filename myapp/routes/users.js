@@ -83,16 +83,17 @@ async function get_user_info_by_mail(email, request_date){
   const promise_pool = pool.promise();
   const SQL = `SELECT * FROM user WHERE email = '${email}';`;
   const results = await promise_pool.query(SQL);
+  // console.log(results);
 
   // 製作 response
-  const id = await results[0].id;
-  const name = await results[0].name;
+  const id = await results[0][0].id;
+  const name = await results[0][0].name;
   const date = await request_date;
   const data = {
     'data': {
       "user": {
         "id": id,
-        "email": await email,
+        "email": email,
         "name": name
       },
       "date": date
