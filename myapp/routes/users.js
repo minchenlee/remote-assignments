@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 
 // 建立 connection pool
@@ -58,12 +57,12 @@ function check_info_valid(name, email, password){
 
 // 格式檢查主函式，不符合會 return true 和錯誤訊息。
 function valid_check(content_type, user_name, email, password){
-  let message = '';
+  let message = 'All good!';
 
   // 檢查 content-type
   // console.log(content_type, 'application/json');
   if (content_type !== 'application/json'){
-    message = "Bad Request: Invalid parameter"
+    message = "Invalid content_type! Only accept: application/json"
     return [true, message];
   };
   
@@ -80,7 +79,7 @@ function valid_check(content_type, user_name, email, password){
 
 
 // 透過 email 取得 id, name, email 等資料
-async function get_user_info(email, request_date){
+async function get_user_info_by_mail(email, request_date){
   const promise_pool = pool.promise();
   const SQL = `SELECT * FROM user WHERE email = '${email}';`;
   const results = await promise_pool.query(SQL);
@@ -140,7 +139,7 @@ router.post('/', async function(req, res, next) {
   const user_name = req.body.name;
   const email = req.body.email;
   const password = req.body.password;
-  const request_date = req.headers.date;
+  const request_date = req.headers['request-date'];
 
   // 格式檢查
   const valid_check_result = valid_check(content_type, user_name, email, password);
@@ -159,7 +158,7 @@ router.post('/', async function(req, res, next) {
 
     console.log('INSERT!');
     // 透過 email 取得 user info 並回傳。
-    const user_info = await get_user_info(email, request_date);
+    const user_info = await get_user_info_by_mail(email, request_date);
     res.send(user_info);
   } catch (error) {
     console.error(error);
@@ -169,7 +168,7 @@ router.post('/', async function(req, res, next) {
 
 
 // 用 id 取得 user 資料。
-async function get_user_info(id){
+async function get_user_info_by_id(id){
   const promise_pool = pool.promise();
   const SQL = `SELECT id, name, email FROM user WHERE id = '${id}';`
   const results = await promise_pool.query(SQL);
@@ -188,13 +187,13 @@ async function id_exist(id){
 
 
 // QUERY API/GET
-router.get('/:id', async function(req, res, next) {
-  const id = req.params.id;
-  const date = req.headers.date;
+router.get('/', async function(req, res, next) {
+  const id = req.query.id;
+  const date = req.headers['request-date'];
   const content_type = req.headers['content-type'];
 
   if (content_type !== 'application/json'){
-    message = "Bad Request: Invalid parameter"
+    res.status(400).send("Invalid contnet_type! Only accept: application/json");
     return;
   }
 
@@ -205,7 +204,7 @@ router.get('/:id', async function(req, res, next) {
       return;
     }
 
-    const results = await get_user_info(id);
+    const results = await get_user_info_by_id(id);
     const name = await results.name;
     const email = await results.email;
 
