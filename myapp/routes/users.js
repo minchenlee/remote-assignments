@@ -83,18 +83,17 @@ async function get_user_info_by_mail(email, request_date){
   const promise_pool = pool.promise();
   const SQL = `SELECT * FROM user WHERE email = '${email}';`;
   const results = await promise_pool.query(SQL);
-  // console.log(results);
 
   // 製作 response
-  const id = results[0][0].id;
-  const name = results[0][0].name;
+  const id = await results[0][0].id;
+  const name = await results[0][0].name;
   const date = request_date;
   const data = {
     'data': {
       "user": {
-        "id": id,
+        "id": await id,
         "email": email,
-        "name": name
+        "name": await name
       },
       "date": date
     }
@@ -110,27 +109,21 @@ async function whether_email_exists(email){
   const SQL = `SELECT COUNT(email) FROM user WHERE email = '${email}';`
   const results = await promise_pool.query(SQL);
   const count = await results[0][0]['COUNT(email)']
-  return count;
+  
+  if (count === 1){
+    console.log('Email Already Exists!');
+    return true;
+  }
 };
 
 
 // 將 user 資料 insert 到 database 中。
 async function insert_new_user_info(user_name, email, password){
-  // 檢查 email 是否已經存在，如果存在的話，回傳 true。
-  const match_email_count = await whether_email_exists(`${email}`);
-  // console.log(match_email_count === 1);
-  if (match_email_count === 1){
-    console.log('Email Already Exists!');
-    return true;
-  }
-
+  const promise_pool = pool.promise();
   const SQL = `\
   INSERT INTO user (name, email, password) VALUES ('${user_name}', '${email}', '${password}');\
   `;
-  
-  pool.query(SQL, function(err, results, fields) {
-    if (err) throw (err);
-  });
+  await promise_pool.query(SQL);
 };
 
 
@@ -151,16 +144,21 @@ router.post('/', async function(req, res, next) {
 
   // 將 user 資料 insert 到 database 中，同時檢查 email 是否已經存在。
   try{
-    const whether_exists = await insert_new_user_info(user_name, email, password);
+    // 檢查 email 是否已經存在
+    const whether_exists = await whether_email_exists(email);
     if (whether_exists){
       res.status(403).send('Email Already Exists!');
       return;
     }
 
+    // 新增新的 user 資料。
+    await insert_new_user_info(user_name, email, password);
     console.log('INSERT!');
+
     // 透過 email 取得 user info 並回傳。
     const user_info = await get_user_info_by_mail(email, request_date);
     res.send(user_info);
+
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
