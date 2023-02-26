@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2');
+require('dotenv').config();
 
 // 建立 connection pool
 const pool = mysql.createPool({
-  host: 'database-3.ckgj7aoueird.ap-northeast-1.rds.amazonaws.com',
-  user: 'admin',
-  password: "iFx0xnx80KaOXzxvGZWA",
-  database: 'assignment',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PWD,
+  database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
   maxIdle: 10,
