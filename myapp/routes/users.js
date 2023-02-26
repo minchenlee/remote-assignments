@@ -198,12 +198,13 @@ router.get('/', async function(req, res, next) {
 
   try{
     const count = await id_exist(id);
-    if (count !== 1){
+    const results = await get_user_info_by_id(id);
+
+    if (results === undefined){
       res.status(403).send('User Not Existing')
       return;
     }
 
-    const results = await get_user_info_by_id(id);
     const name = await results.name;
     const email = await results.email;
 
