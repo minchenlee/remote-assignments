@@ -176,13 +176,13 @@ async function get_user_info_by_id(id){
 
 
 // 確認 id 是否存在
-async function id_exist(id){
-  const promise_pool = pool.promise();
-  const SQL = `SELECT COUNT(id) FROM user WHERE id = '${id}';`
-  const results = await promise_pool.query(SQL);
-  const count = results[0][0]['COUNT(id)']
-  return count;
-}
+// async function id_exist(id){
+//   const promise_pool = pool.promise();
+//   const SQL = `SELECT COUNT(id) FROM user WHERE id = '${id}';`
+//   const results = await promise_pool.query(SQL);
+//   const count = results[0][0]['COUNT(id)']
+//   return count;
+// }
 
 
 // QUERY API/GET
@@ -197,7 +197,6 @@ router.get('/', async function(req, res, next) {
   }
 
   try{
-    const count = await id_exist(id);
     const results = await get_user_info_by_id(id);
 
     if (results === undefined){
