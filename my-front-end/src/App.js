@@ -3,7 +3,7 @@ import './App.css';
 
 
 async function sign_up_API(info){
-  const url = 'http://52.199.147.207:3000/users';
+  const url = 'http://52.199.147.207/api/users';
   const data = `{
   "name":"${info.name}",
   "email":"${info.email}",
