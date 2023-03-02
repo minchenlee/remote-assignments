@@ -33,26 +33,26 @@ function check_pass_word(password) {
 function check_info_valid(name, email, password){
   // check name whether only use alphabets and numbers.
   if (/^[A-Za-z0-9]+$/.test(name)){
-    console.log('Name is valid!');
-    } else {
-        return [true, '姓名格式不符'];
-    };
+      console.log('Name is valid!');
+  } else {
+      return [true, '姓名格式不符'];
+  };
 
-    // chack email whether has right format.
-    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-        console.log('Email is valid!');
-    } else {
-        return [true, '信箱格式不符'];
-    };
+  // chack email whether has right format.
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      console.log('Email is valid!');
+  } else {
+      return [true, '信箱格式不符'];
+  };
 
-    // check password is contain atleast three diff. type of characters.
-    if (check_pass_word(password) >= 3){
-        console.log('Password is valid!');
-    } else {
-        return [true, '密碼格式不符'];
-    };
-    
-    return [false, '所有格式正確！']
+  // check password is contain atleast three diff. type of characters.
+  if (check_pass_word(password) >= 3){
+      console.log('Password is valid!');
+  } else {
+      return [true, '密碼格式不符'];
+  };
+  
+  return [false, '所有格式正確！']
 }
 
 
